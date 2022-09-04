@@ -1,10 +1,10 @@
 # ----- net/outputs.tf
 
 output "vpc_id" {
-  value = aws_vpc.tkckesproj.id
+  value = aws_vpc.tfceksproj.id
 }
 
-output "aws_public_subnet" {
-  value = aws_subnet.pb_tfeks_sn.*.id
+output "aws_pb_sn" {
+  value = aws_subnet.pb_tfceks_sn.*.id
 }
 

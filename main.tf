@@ -1,9 +1,9 @@
-# -----root/main.tf
+# ----root/main.tf
 
 module "eks" {
   source          = "./eks"
-  aws_pb_sn       = module.vpc.aws_pb_sn
-  vpc_id          = module.vpc.vpc_id
+  aws_pb_sn       = module.net.aws_pb_sn
+  vpc_id          = module.net.vpc_id
   cluster_name    = "tfcloud-eks-${random_string.suffix.result}"
   endnt_pb_acc    = true
   endpnt_pvt_acc  = false

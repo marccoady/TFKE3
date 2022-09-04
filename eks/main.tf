@@ -1,9 +1,9 @@
 # ------ eks/main.tf
 
 
-resource "aws_eks_cluster" "tfckesproj" {
+resource "aws_eks_cluster" "tfceksproj" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.tfckesproj.arn
+  role_arn = aws_iam_role.role1.arn
 
   vpc_config {
     subnet_ids              = var.aws_pb_sn
@@ -14,20 +14,19 @@ resource "aws_eks_cluster" "tfckesproj" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.tfckesproj-AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.tfckesproj-AmazonEKSVPCResourceController,
+    aws_iam_role_policy_attachment.tfceksproj-AmazonEKSClusterPolicy,
   ]
 }
 
-resource "aws_eks_node_group" "tfckesproj" {
-  cluster_name    = aws_eks_cluster.tfckesproj.name
+resource "aws_eks_node_group" "tfceksproj" {
+  cluster_name    = aws_eks_cluster.tfceksproj.name
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.role2.arn
   subnet_ids      = var.aws_pb_sn
   instance_types  = var.instance
 
   remote_access {
-    source_security_group_ids = [aws_security_group.group_a.id]
+    source_security_group_ids = [aws_security_group.node_group_a.id]
     ec2_ssh_key               = var.key_pair
   }
 
@@ -38,14 +37,14 @@ resource "aws_eks_node_group" "tfckesproj" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.tfckesproj-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.tfckesproj-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.tfckesproj-AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.tfceksproj-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.tfceksproj-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.tfceksproj-AmazonEC2ContainerRegistryReadOnly,
   ]
 }
 
-resource "aws_security_group" "node_group_one" {
-  name_prefix = "node_group_one"
+resource "aws_security_group" "node_group_a" {
+  name_prefix = "node_group_a"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -68,7 +67,7 @@ resource "aws_security_group" "node_group_one" {
 
 
 resource "aws_iam_role" "role1" {
-  name = "eks-cluster-tfckesproj"
+  name = "eks-cluster-tfceksproj"
 
   assume_role_policy = <<POLICY
 {
@@ -86,13 +85,13 @@ resource "aws_iam_role" "role1" {
 POLICY
 }
 
-resource "aws_iam_role_policy_attachment" "tfckesproj-AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "tfceksproj-AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.role1.name
 }
 
 resource "aws_iam_role" "role2" {
-  name = "eks-node-group-tfckesproj"
+  name = "eks-node-group-tfceksproj"
 
   assume_role_policy = jsonencode({
     Statement = [{
@@ -107,17 +106,17 @@ resource "aws_iam_role" "role2" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "tfckesproj-AmazonEKSWorkerNodePolicy" {
+resource "aws_iam_role_policy_attachment" "tfceksproj-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.role2.name
 }
 
-resource "aws_iam_role_policy_attachment" "tfckesproj-AmazonEKS_CNI_Policy" {
+resource "aws_iam_role_policy_attachment" "tfceksproj-AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.role2.name
 }
 
-resource "aws_iam_role_policy_attachment" "tfckesproj-AmazonEC2ContainerRegistryReadOnly" {
+resource "aws_iam_role_policy_attachment" "tfceksproj-AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.role2.name
 }
